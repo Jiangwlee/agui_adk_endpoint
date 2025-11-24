@@ -2,3 +2,10 @@
 AGENTS.md
 CLAUDE.md
 ai_memory/
+.venv/
+.uv_cache/
+.next/
+node_modules/
+dist/
+**/__pycache__/*
+.env
