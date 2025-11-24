@@ -21,4 +21,7 @@ clean:
   echo "Cleaning agui_adk_endpoint..."
   cd agui_adk_endpoint && uv clean
 
+publish:
+  echo "Publishing agui_adk_endpoint to PyPI..."
+  cd agui_adk_endpoint && uv clean && uv build && UV_PUBLISH_TOKEN=${UV_PUBLISH_TOKEN?missing_UV_PUBLISH_TOKEN} uv publish
 
