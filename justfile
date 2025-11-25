@@ -19,7 +19,7 @@ run-frontend:
 
 clean:
   echo "Cleaning agui_adk_endpoint..."
-  cd agui_adk_endpoint && uv clean
+  cd agui_adk_endpoint && uv clean && rm -rf dist/*
 
 publish:
   echo "Publishing agui_adk_endpoint to PyPI..."

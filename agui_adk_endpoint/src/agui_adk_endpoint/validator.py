@@ -29,13 +29,16 @@ class AdkParams(BaseModel):
 
         return str(path)
 
-def validate_parameters():
+def validate_parameters(agent_dir: str = None) -> AdkParams:
     """验证并返回 ADK 参数"""
     load_dotenv()
 
     adk_agent_dir = os.getenv('ADK_AGENT_DIR')
     if not adk_agent_dir:
-        raise ValueError('ADK_AGENT_DIR 环境变量未设置')
+        if agent_dir:
+            adk_agent_dir = agent_dir
+        else:
+            raise ValueError('ADK_AGENT_DIR 环境变量未设置')
 
     params = AdkParams(
         adk_agent_dir=adk_agent_dir,

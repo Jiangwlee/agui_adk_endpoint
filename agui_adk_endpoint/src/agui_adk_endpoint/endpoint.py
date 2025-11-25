@@ -3,6 +3,7 @@
 """FastAPI endpoint for ADK middleware."""
 
 from logging import getLogger
+from typing import Optional
 from ag_ui.core import RunAgentInput, BaseEvent
 from ag_ui.core.events import EventType
 from ag_ui.encoder import EventEncoder
@@ -112,3 +113,16 @@ class AdkFastAPIEndpoint:
             )
 
         app.include_router(adk_router)
+
+def create_endpoint(
+        prefix: str = "/adk", 
+        plugins=[],
+        agent_dir: Optional[str] = None) -> AdkFastAPIEndpoint:
+    """Create an ADK endpoint.
+
+    Args:
+        agent_dir: Directory containing agent definitions (optional)
+    """
+    from .validator import validate_parameters
+    params = validate_parameters(agent_dir)
+    return AdkFastAPIEndpoint(params, prefix=prefix, plugins=plugins)

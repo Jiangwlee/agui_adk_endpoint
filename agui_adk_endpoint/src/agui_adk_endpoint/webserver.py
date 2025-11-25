@@ -1,15 +1,13 @@
 from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .endpoint import AdkFastAPIEndpoint
-from .validator import validate_parameters
+from .endpoint import create_endpoint
 
 def create_webserver(
         host: str = '127.0.0.1', 
         port: int = 8000,
+        agent_dir: Optional[str] = None,
         allow_origins: Optional[list[str]] = None,) -> FastAPI:
-    params = validate_parameters()
-
     app = FastAPI()
 
     if allow_origins:
@@ -22,7 +20,7 @@ def create_webserver(
       )
 
     # Add AG-UI endpoint
-    endpoint = AdkFastAPIEndpoint(params=params)
+    endpoint = create_endpoint(agent_dir=agent_dir)
     endpoint.add_fastapi_endpoint(app)
 
     return app

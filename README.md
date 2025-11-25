@@ -54,6 +54,19 @@ if __name__ == "__main__":
     uvicorn.run("agui_adk_endpoint.webserver:create_webserver", host="0.0.0.0", port=8000, reload=True)
 ```
 
+Or create a endpoint and attach it existing webserver.
+```python
+from agui_adk_endpoint import create_endpoint
+
+app = FastAPI()
+
+# Create the endpoint
+endpoint = create_endpoint(agent_dir="./agents", prefix="/adk")
+
+# Attach the endpoint to the app
+endpoint.add_fastapi_endpoint(app)
+```
+
 ## License
 
 MIT
