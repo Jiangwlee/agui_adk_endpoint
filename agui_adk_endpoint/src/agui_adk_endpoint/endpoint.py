@@ -22,19 +22,6 @@ class AdkFastAPIEndpoint:
         self.agent_factory = AgentFactory(params=params, plugins=plugins)
         self.prefix = prefix
 
-    def _is_filtered(self, event: BaseEvent) -> bool:
-        """Filter out events that are not needed for the frontend.
-
-        Args:
-            event: Event to filter
-
-        Returns:
-            True if the event should be filtered, False otherwise
-        """
-        if event.type in (EventType.TEXT_MESSAGE_CHUNK, EventType.TEXT_MESSAGE_CONTENT, EventType.THINKING_TEXT_MESSAGE_CONTENT):
-            if event.delta.strip() == '':
-                return True
-        return False
 
     def add_fastapi_endpoint(self, app: FastAPI):
         """Create a fastapi endpoint router for all ADK apps.
@@ -72,12 +59,8 @@ class AdkFastAPIEndpoint:
                 try:
                     async for event in agent.run(input_data):
                         try:
-                            if not self._is_filtered(event):
-                                encoded = encoder.encode(event)
-                                logger.debug(f"HTTP Response: {encoded}")
-                                yield encoded
-                            else:
-                                logger.info(f"Filtered event: {event}")
+                            encoded = encoder.encode(event)
+                            yield encoded
                         except Exception as encoding_error:
                             # Handle encoding-specific errors
                             logger.error(
