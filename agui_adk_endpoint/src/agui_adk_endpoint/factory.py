@@ -18,6 +18,7 @@ from google.adk.plugins.base_plugin import BasePlugin
 from google.adk.cli.utils.agent_loader import AgentLoader
 from google.adk.cli.utils import envs
 from google.adk.cli.service_registry import get_service_registry
+from google.adk.sessions.session import Session
 from ag_ui_adk import ADKAgent
 
 from .validator import AdkParams
@@ -90,8 +91,6 @@ class AgentFactory:
         # Build  the Credential service
         self.credential_service = InMemoryCredentialService()
 
-        
-    
     async def create_agent(self, app_name: str) -> ADKAgent:
         """Returns the cached runner for the given app."""
         # Create new agent
@@ -120,6 +119,22 @@ class AgentFactory:
         )
         self.agents_dict[app_name] = agent
         return agent
+    
+    async def list_agents(self) -> List[str]:
+        """Lists available agents in the agent directory."""
+        return self.agent_loader.list_agents()
+    
+    async def list_sessions(self, app_name: str, user_id: str) -> List[Session]:
+        """Returns the list of sessions for the given app and user."""
+        return await self.session_service.list_sessions(app_name=app_name, user_id=user_id)
+    
+    async def get_session(self, app_name: str, user_id: str, session_id: str) -> Optional[Session]:
+        """Returns the session for the given app, user, and session ID."""
+        return await self.session_service.get_session(
+            app_name=app_name,
+            user_id=user_id,
+            session_id=session_id,
+        )
 
 class AguiADKAgent(ADKAgent):
     """Fixed ADKAgent that properly marks ToolMessages as processed
