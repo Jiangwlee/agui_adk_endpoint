@@ -20,6 +20,8 @@ from google.adk.cli.utils import envs
 from google.adk.cli.service_registry import get_service_registry
 from google.adk.sessions.session import Session
 from ag_ui_adk import ADKAgent
+from ag_ui_adk.utils.converters import convert_adk_event_to_ag_ui_message
+from ag_ui.core.types import Message
 
 from .validator import AdkParams
 
@@ -135,6 +137,21 @@ class AgentFactory:
             user_id=user_id,
             session_id=session_id,
         )
+        
+    async def delete_session(self, app_name: str, user_id: str, session_id: str) -> None:
+        """Deletes the session for the given app, user, and session ID."""
+        await self.session_service.delete_session(
+            app_name=app_name,
+            user_id=user_id,
+            session_id=session_id,
+        )
+        
+    async def get_messages(self, app_name: str, user_id: str, session_id: str) -> List[Message]:
+        """Returns the messages for the given app, user, and session ID."""
+        session = await self.get_session(app_name, user_id, session_id)
+        if not session:
+            return []
+        return [convert_adk_event_to_ag_ui_message(event) for event in session.events]
 
 class AguiADKAgent(ADKAgent):
     """Fixed ADKAgent that properly marks ToolMessages as processed

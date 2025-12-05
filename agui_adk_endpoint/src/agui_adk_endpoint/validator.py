@@ -1,8 +1,11 @@
 import os
+import logging
 from pathlib import Path
 from dotenv import load_dotenv
 from typing import Optional
 from pydantic import BaseModel, field_validator
+
+logger = logging.getLogger(__name__)
 
 class AdkParams(BaseModel):
     adk_agent_dir: str
@@ -39,6 +42,14 @@ def validate_parameters(agent_dir: str = None) -> AdkParams:
             adk_agent_dir = agent_dir
         else:
             raise ValueError('ADK_AGENT_DIR 环境变量未设置')
+        
+    try:
+        import json
+        session_db_options = os.getenv('ADK_SESSION_DB_OPTIONS', '{}')
+        config = json.loads(session_db_options)
+    except Exception as e:
+        logger.error(f"解析 ADK_SESSION_DB_OPTIONS 失败: {e}, ADK_SESSION_DB_OPTIONS: {session_db_options}")
+        config = {}
 
     params = AdkParams(
         adk_agent_dir=adk_agent_dir,
@@ -46,7 +57,7 @@ def validate_parameters(agent_dir: str = None) -> AdkParams:
         session_service_url=os.getenv('ADK_SESSION_SERVICE_URL', None),
         artifact_service_uri=os.getenv('ADK_ARTIFACT_SERVICE_URI', None),
         credential_service_url=os.getenv('ADK_CREDENTIAL_SERVICE_URL', None),
-        session_db_kwargs={}
+        session_db_kwargs=config
     )
 
     return params
